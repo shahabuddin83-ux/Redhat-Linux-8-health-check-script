@@ -1,0 +1,41 @@
+Here's your RHEL 8 health check script. Here's what it covers across 11 sections:
+Section
+What's Checked
+OS & Kernel
+RHEL version, kernel, uptime
+CPU
+Usage %, I/O wait %, load average vs core count
+RAM
+Used/available GB, usage %, buffers & cache
+Swap
+Used/free GB, usage %, vm.swappiness tuning
+Disk / Hard Disk
+Per-filesystem space %, inode usage, block devices, I/O stats (iostat)
+Filesystem
+Read-only detection, /tmp write test, XFS info
+Network
+Interface UP/DOWN states, IP addresses
+Services
+sshd, chronyd, firewalld, rsyslog, etc. + failed units
+Open Files
+ulimit -n, file descriptor usage vs system max
+Security/Updates
+SELinux mode, firewalld, pending dnf updates, last logins
+Kernel Errors
+Recent dmesg critical/error messages
+Thresholds (configurable at the top):
+CPU: warn ≥70%, critical ≥90%
+RAM: warn ≥75%, critical ≥90%
+Swap: warn ≥50%, critical ≥80%
+Disk: warn ≥75%, critical ≥90%
+
+# Run interactively with color output
+sudo bash rhel8_healthcheck.sh
+
+# Save a plain-text report
+sudo bash rhel8_healthcheck.sh --report /var/log/healthcheck_$(date +%F).txt
+
+# Schedule via cron (daily at 6 AM)
+echo "0 6 * * * root bash /opt/rhel8_healthcheck.sh --report /var/log/healthcheck_\$(date +\%F).txt" >> /etc/cron.d/healthcheck
+
+Note: Install sysstat (dnf install sysstat) for disk I/O stats via iostat. The script runs fine without it but will show a warning for that check.
